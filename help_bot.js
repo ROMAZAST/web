@@ -1,90 +1,62 @@
 
-const {admins_id,emodji, client, bot_help} = require("./const.js")
+const {admins_id, bot_help} = require("./const.js")
 const {  updateAnswerByNumber, setAnswerRestorByNumber,setAnswerDeleteByNumber, open_ask, open_menu, setAnswerDelete,openDocument, open_tickets, getDocumentById,generateQuestionButtons,add_question_to_db, main_menu, findTicketsByIdAndAnswer} = require("./functions_for_help_bot.js")
+
 bot_help.onText(/^\/start/, (msg) => {
-   main_menu(msg)
+  main_menu(msg)
 });
 bot_help.onText(/^\/menu/, (msg) => {
-   main_menu(msg)
+  main_menu(msg)
 });
+
 bot_help.onText(/^\/ask(.*)/, (msg,match) => {
   add_question_to_db(msg,match)
 });  
+
 bot_help.onText(/^\/lastask/, (msg) => {
   var message = msg.chat.id
-  console.log(message)
-  console.log(admins_id.indexOf(String(message)) !== -1)
-  if (admins_id.indexOf(String(message)) !== -1){
-    open_ask(msg)
-  }
-  else{
-    bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди)`)
-  }
+  if (admins_id.indexOf(String(message)) !== -1){ open_ask(msg) }
+  else { /*bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди`)*/ }
 });  
 
 bot_help.onText(/^\/delask(.*)/, (msg,match) => {
   var message = msg.chat.id
-  if (admins_id.indexOf(String(message)) !== -1){
+  if (admins_id.indexOf(String(message)) !== -1) {
     setAnswerDeleteByNumber(match[1].trim()).then(
-      number => {
-        bot_help.sendMessage(msg.chat.id, `Питання №${number} видалено`)
-      })
+      number => { bot_help.sendMessage(msg.chat.id, `Питання №${number} видалено`) })
   }
-  else {
-    bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди)`)
-  }
-});  
+  else { /*bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди)`)*/ }
+}); 
+
 bot_help.onText(/^\/resask(.*)/, (msg,match) => {
   var message = msg.chat.id
   if (admins_id.indexOf(String(message)) !== -1){
     setAnswerRestorByNumber(match[1].trim()).then(
-      number => {
-        bot_help.sendMessage(msg.chat.id, `Питання №${number} відновлено`)
-      })
+      number => { bot_help.sendMessage(msg.chat.id, `Питання №${number} відновлено`) })
   }
-  else {
-    bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди)`)
-  }
+  else { /*bot_help.sendMessage(msg.chat.id, `У вас немає доступу до цієї команди)`)*/ }
 });  
 bot_help.onText(/^\/id/, (msg) => {
   bot_help.sendMessage(msg.chat.id, `Ваш id: ${msg.chat.id}`)
 });  
-  
-bot_help.onText(/\/2/, (msg) => {
-});
+
 bot_help.onText(/^\/answ \b(.*)\b (.*)/, (msg, match) => {
-  updateAnswerByNumber(match[1], match[2]).then(
-    console.log(match[1]),
-    console.log(match[2])
-  )
+  updateAnswerByNumber(match[1], match[2])
 });
 
 bot_help.on('callback_query', (callbackQuery) => {
   const message = callbackQuery.message;
   const data1 = callbackQuery.data;
-  
-  
-  if (callbackQuery.data === 'tickets') {
-    open_tickets(callbackQuery, 1)
-  }
-  if (callbackQuery.data === `menu`) {
-    open_menu(callbackQuery)
-  }
-  else if (callbackQuery.data === 'back_to_tickets') {
-    open_tickets(callbackQuery, 1)
-  }
-  
+
+  if (callbackQuery.data === 'tickets') { open_tickets(callbackQuery, 1) }
+  if (callbackQuery.data === `menu`) { open_menu(callbackQuery) }
+  else if (callbackQuery.data === 'back_to_tickets') { open_tickets(callbackQuery, 1) }
   else if (data1.startsWith('open_question:')) {
     const id_list = data1.split(':')[1];
-    console.log(id_list)
-    getDocumentById(id_list).then(doc => {
-            console.log(doc)
-            openDocument(callbackQuery,doc)
-        })
+    getDocumentById(id_list).then(doc => { openDocument(callbackQuery,doc) })
   }
   else if (data1.startsWith('next_page:')) {
     const page = data1.split(':')[1];
-    console.log(page)
     open_tickets(callbackQuery, page)
   }
   else if (data1.startsWith('previous_page:')) {
@@ -93,9 +65,6 @@ bot_help.on('callback_query', (callbackQuery) => {
   }
   else if (data1.startsWith('delete_ticket:')) {
     const number = data1.split(':')[1];
-    setAnswerDeleteByNumber(number).then(
-        setTimeout(open_tickets,1000,callbackQuery, 1)
-    )
+    setAnswerDeleteByNumber(number).then( setTimeout(open_tickets,1000,callbackQuery, 1))
   }
-  
 });

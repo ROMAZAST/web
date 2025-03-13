@@ -1,6 +1,6 @@
 const { MongoClient, ObjectId } = require("mongodb");
 const TelegramBot = require('node-telegram-bot-api');
-const uri = "mongo_url";
+const uri = "mongolink";
 const client = new MongoClient(uri);
 const config = require(`./config.json`);
 const token = `${config.token}`;
