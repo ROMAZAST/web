@@ -1,4 +1,5 @@
 const {links, bcrypt, ObjectId,emodji, client, bot, responce_answer} = require("./const.js")
+// function for the logout command
 function logOut(chatId){
   getUser(chatId).then(user => {  
     if(user.auth !== true) {
@@ -14,7 +15,7 @@ function logOut(chatId){
     }
   }).catch(err => { console.error(err); });
 }
-
+// function for the get total price products
 function get_total_price(list) {
   let total_price = 0;
   if (Object.keys(list).length === 0) { return 0; }
@@ -25,7 +26,7 @@ function get_total_price(list) {
   });
   return total_price.toFixed(2);
 }
-
+// function for the get lists by user id
 function lists_out(callbackQuery, text_, page){
   getLists(callbackQuery).then(list => { 
     if(list != 0) {
@@ -40,7 +41,7 @@ function lists_out(callbackQuery, text_, page){
     }
   }); 
 }
-
+// async function for the add user to the database
 async function addUser(id_user,pass) {
   try {
     const database = client.db("test");
@@ -51,7 +52,7 @@ async function addUser(id_user,pass) {
     const result = await accounts.updateOne(filter, updateDoc, options);
   } finally {}
 }
-
+// function for the add create new list
 async function addList(callbackQuery) {
   try {
     const id_user = callbackQuery.from.id
@@ -64,7 +65,7 @@ async function addList(callbackQuery) {
     });
   } finally {}
 }
-
+// function for the edit list of products
 function edit_list(callbackQuery, _name) {
   const photoUrl = links.edit_list
   openList(_name).then(list => {
@@ -113,7 +114,7 @@ function edit_list(callbackQuery, _name) {
   bot.answerCallbackQuery(callbackQuery.id);
   });
 }
-
+// function for the create new list
 async function createNewList(id_user, _name) {
   try {
     const database = client.db("test");
@@ -123,7 +124,7 @@ async function createNewList(id_user, _name) {
     return result.insertedId
   } finally {}
 }
-
+// function for the get product by name
 async function getProd(_name) {
   try {
     const database = client.db("test");
@@ -133,6 +134,7 @@ async function getProd(_name) {
     return result;
   } finally {}
 }
+// function for the get section names
 async function getSectionNames() {
   try {
     const database = client.db("test");
@@ -147,7 +149,7 @@ async function getSectionNames() {
     return names;
   } catch (error) { console.log("Error:", error); throw error; }
 } 
-
+// function for the get section names in Ukrainian language
 async function getSectionNamesUkr() {
   try {
     const database = client.db("test");
@@ -162,7 +164,7 @@ async function getSectionNamesUkr() {
     return names;
   } catch (error) { console.log("Error:", error);throw error; }
 } 
-
+// function for the get existing lists of products
 async function getLists(callbackQuery) {
   try {
     const _id = callbackQuery.from.id
@@ -179,6 +181,7 @@ async function getLists(callbackQuery) {
     else { const docs = await cursor.toArray(); return docs; }
   } finally {}
 }
+// function for the get lists by id user
 async function getListsByIDUser(_id) {
   try {
     const database = client.db("test");
@@ -190,7 +193,7 @@ async function getListsByIDUser(_id) {
     return docs;
   } finally {}
 }
-
+// function for the share list of products
 async function share_list(bool, _id_) {
   try {
     const database = client.db("test");
@@ -201,6 +204,7 @@ async function share_list(bool, _id_) {
     return result;
   } finally {}
 }
+// function for the open list of products
 async function openList(_id_) {
   try {
     const database = client.db("test");
@@ -210,7 +214,7 @@ async function openList(_id_) {
     return list;
   } finally {}
 }
-
+// function for the get user by id
 async function getUser(id_user) {
   try {
     const database = client.db("test");
@@ -220,7 +224,7 @@ async function getUser(id_user) {
     return user;
   } finally {}
 }
-
+// function for the set auth user
 async function setAuthUser(id_user, bool) {
   try {
     const database = client.db("test");
@@ -231,7 +235,7 @@ async function setAuthUser(id_user, bool) {
     const result = await accounts.updateOne(filter, updateDoc, options);
   } finally {}
 }
-
+// function for the set reminder
 async function setReminder(id_user, bool) {
   try {
     const database = client.db("test");
@@ -242,6 +246,7 @@ async function setReminder(id_user, bool) {
     const result = await accounts.updateOne(filter, updateDoc, options);
   } finally {}
 }
+// function for settings menu
 function settings(callbackQuery) {
   const message = callbackQuery.message;
   const photoUrl = links.settings;
@@ -262,7 +267,7 @@ function settings(callbackQuery) {
   if (message.photo[0].file_id !== photoUrl) { bot.editMessageMedia({ type: 'photo', media: photoUrl }, options); }
   bot.answerCallbackQuery(callbackQuery.id);
 }
-
+// function for open reminder menu
 function reminder(callbackQuery) {
   const message = callbackQuery.message;
   const photoUrl = links.reminder;
@@ -280,7 +285,7 @@ function reminder(callbackQuery) {
   });
   bot.answerCallbackQuery(callbackQuery.id);
 }
-
+// function for the update name list
 function name_change_update(msg, id, match)
 {
   const chatId = id;
@@ -322,6 +327,7 @@ function name_change_update(msg, id, match)
     }
   }
 } 
+//function for login and logout
 function login(chatId, match)
 {
   let result1 = match[1]
@@ -401,13 +407,13 @@ function login(chatId, match)
     })
   }
 }
-
+// function for hash password
 async function hashPassword(password) {
   const salt = 'hash_salt';
   const hashedPassword = await bcrypt.hash(password, salt);
   return hashedPassword;
 }
-
+//function for change password 
 function password(chatId, match){
   getUser(chatId).then(user => {
     var check = match[1]
@@ -469,7 +475,7 @@ function password(chatId, match){
     }
   }).catch(err => { console.error(err); });  
 }
-
+//function for the add product
 function add_product(callbackQuery, _id, _page) {
   const photoUrl = links.change_sect;
   getSectionNames().then(buttons => {
@@ -493,7 +499,7 @@ function add_product(callbackQuery, _id, _page) {
     });
   });
 }
-
+//function for set name change waiting in the user list
 async function name_change_waiting(id_user) {
   try {
     const database = client.db("test");
@@ -503,7 +509,7 @@ async function name_change_waiting(id_user) {
     const result = await accounts.updateOne(filter, updateDoc);
     } catch (error) { console.log('Error updating document:', error); }
 }
-
+//function for update documents with waiting name
 async function updateDocumentsWithWaitingName(id_user, name) {
   try {
     const database = client.db("test");
@@ -517,6 +523,7 @@ async function updateDocumentsWithWaitingName(id_user, name) {
     return name;
   } catch (error) { console.log('Error updating documents:', error); }
 }
+//function for update documents with waiting name to null
 async function updateDocumentsWithWaitingNameToNull(_id_) {
   try {
     const database = client.db("test");
@@ -528,18 +535,19 @@ async function updateDocumentsWithWaitingNameToNull(_id_) {
     }
   } catch (error) { console.log('Error updating documents:', error); }
 }
-
+//function for on reminder
 function on_reminder(callbackQuery) {
   var mesg = 'Нагадування включено'
   setReminder(callbackQuery.from.id, true).then(
     bot.answerCallbackQuery(callbackQuery.id, {text: mesg}))
 }
-
+//function for off reminder
 function off_reminder(callbackQuery){
   var mesg = 'Нагадування виключено'
   setReminder(callbackQuery.from.id, false).then(
   bot.answerCallbackQuery(callbackQuery.id, {text: mesg}))
 }
+//function for the open main manu
 function menu(callbackQuery) {
   const photoUrl = links.main_menu;
   const message = callbackQuery.message;
@@ -559,7 +567,7 @@ function menu(callbackQuery) {
   bot.editMessageMedia({ type: 'photo', media: photoUrl }, options);
   bot.answerCallbackQuery(callbackQuery.id);
 }
-
+// function for the open lists menu with names
 function list_names(callbackQuery, list_names, text_, page) {
   const message = callbackQuery.message;
   const photoUrl = links.my_lists;
@@ -574,7 +582,7 @@ function list_names(callbackQuery, list_names, text_, page) {
   bot.editMessageMedia({ type: 'photo', media: photoUrl }, options);
   bot.answerCallbackQuery(callbackQuery.id, { text: text_ });
 }
-  
+// function for the open list by keys
 function openListbykeys(callbackQuery, list) {
   const photoUrl = links.list;
   const name_list = `${emodji.name} Назва: ` + list.name_list;
@@ -609,6 +617,7 @@ function openListbykeys(callbackQuery, list) {
   }
   bot.answerCallbackQuery(callbackQuery.id);
 }
+// function for the open shared lists by keys for admins
 function openShareListbykeys_for_admins(callbackQuery, list) {
   const photoUrl = links.list;
   const name_list = `${emodji.name} Назва: ` + list.name_list;
@@ -642,6 +651,7 @@ function openShareListbykeys_for_admins(callbackQuery, list) {
   }
   bot.answerCallbackQuery(callbackQuery.id);
 }
+//function for the open shared lists by keys for user
 function openShareListbykeys_for_user(callbackQuery, list) {
   const photoUrl = links.list;
   const name_list = `${emodji.name} Назва: ` + list.name_list;
@@ -674,7 +684,7 @@ function openShareListbykeys_for_user(callbackQuery, list) {
   }
   bot.answerCallbackQuery(callbackQuery.id);
 }
-
+//function for the add element to list
 function add_element_to_list(callbackQuery,name_prod,count,_id){
   openList(_id).then(list =>{
     delete list['_id'];delete list[`name_change`];delete list['public']; delete list['name_list'];delete list['id']
@@ -684,16 +694,7 @@ function add_element_to_list(callbackQuery,name_prod,count,_id){
   })
 }
 
-async function updateObjectProperty(_id, index, value) {
-  try {  
-    const database = client.db("test");
-    const lists = database.collection("lists")
-    const filter = { _id: new ObjectId(_id) };
-    const update = { $set: { [index]: value } };
-    const result = await lists.updateOne(filter, update);
-  } catch (err) { console.error('Помилка при зміні властивості об\'єкта:', err); } finally {}
-}
-
+//function for the update object property
 async function updateObjectProperty(_id, index, value) {
   try {  
     const database = client.db("test");
@@ -704,6 +705,7 @@ async function updateObjectProperty(_id, index, value) {
   } catch (err) { console.error('Помилка при зміні властивості об\'єкта:', err); } finally {}
 
 }
+//function for the delete list
 async function delete_list(id) {
   try {
     const database = client.db("test");
@@ -712,7 +714,7 @@ async function delete_list(id) {
     return result;
   } finally {}
 }
-   
+//function for the open list menu
 function lists(callbackQuery) {
   const message = callbackQuery.message;
   const photoUrl = links.lists;
@@ -733,7 +735,7 @@ function lists(callbackQuery) {
   bot.editMessageMedia({ type: 'photo', media: photoUrl }, options);
   bot.answerCallbackQuery(callbackQuery.id);
 }
-  
+//function for the comfirm menu  when you editing list
 function confirm_menu(callbackQuery, id_name, _id, count, id_sect) {
   const photoUrl = links.change_count;
   const message = callbackQuery.message;
@@ -773,7 +775,7 @@ function confirm_menu(callbackQuery, id_name, _id, count, id_sect) {
     });
   });
 }
-
+//function for the confirm menu for the share list
 function share_list_confirm(callbackQuery, _id)
 {
   const photoUrl = links.share_confirm
@@ -793,6 +795,7 @@ function share_list_confirm(callbackQuery, _id)
   bot.editMessageMedia({ type: 'photo', media: photoUrl }, options)
   .catch((error) => { console.error('Error editing message media:', error); });
 }
+//function for the open section menu
 function open_section(callbackQuery, name_sect, _id, id_sect, _page) {
   const photoUrl = links.change_prod;
   const message = callbackQuery.message;
@@ -826,7 +829,7 @@ function open_section(callbackQuery, name_sect, _id, id_sect, _page) {
   }).catch(err => { console.error(err); });
   bot.answerCallbackQuery(callbackQuery.id);
 }
-
+//function for the create inline keyboard
 function createInlineKeyboard(buttons, currentPage) {
   const inline_keyboard = [];
   const itemsPerPage = 7;
@@ -851,6 +854,7 @@ function createInlineKeyboard(buttons, currentPage) {
 
   return { inline_keyboard, currentPage };
 }
+//function for the create inline keyboard for sections
 function createInlineKeyboardForSections(buttons, currentPage, totalPages, _id) {
   const itemsPerPage = 8;
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -870,6 +874,7 @@ function createInlineKeyboardForSections(buttons, currentPage, totalPages, _id) 
   inline_keyboard.push([{ text: `${emodji.back} Повернутись назад`, callback_data: `edit_list:${_id}` }]);
   return { inline_keyboard };
 }
+//function for the create inline keyboard for products
 function createInlineKeyboardForProducts(buttons, currentPage, totalPages, _id) {
   const itemsPerPage = 8;
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -893,6 +898,7 @@ function createInlineKeyboardForProducts(buttons, currentPage, totalPages, _id) 
   inline_keyboard.push([{ text: `${emodji.back} Повернутись назад`, callback_data: `add_product:${_id}:1` }]);
   return { inline_keyboard };
 }
+//function for the get count of documents by id
 async function countDocumentsById(id_name) {
   try {
     const database = client.db("test");
@@ -902,6 +908,7 @@ async function countDocumentsById(id_name) {
     return count;
   } catch (error) { console.error('Помилка під час отримання кількості документів:', error); throw error; }
 }
+//function for the open profile menu
 function profile(callbackQuery) {
   const firstName = callbackQuery.from.first_name;
   const lastName = callbackQuery.from.last_name;
@@ -934,7 +941,7 @@ function profile(callbackQuery) {
     }});
   });
 }
-
+//function for the find public documents
 async function findPublicDocuments() {
   try {
     const database = client.db("test");
@@ -959,7 +966,7 @@ async function findPublicDocuments() {
     return keyboard;
   } catch (error) { console.error('Error:', error); return [];}
 }
-
+//function for open shared lists
 function open_shared_lists(callbackQuery) {
   const photoUrl = links.shared_list;
   findPublicDocuments().then(keyboard1 => {
@@ -975,7 +982,7 @@ function open_shared_lists(callbackQuery) {
     ).catch(error => { console.error('Error:', error); });
   }).catch(error => { console.error('Error:', error); });
 }
-
+// function for random indexes
 function getRandomIndexes(total, count) {
   const indexes = new Set();
   while (indexes.size < count) {
@@ -984,6 +991,7 @@ function getRandomIndexes(total, count) {
   }
   return Array.from(indexes);
 }
+//function for the send message by bot
 function say(chatId,text_,){
   if(text_ == 0){
     text_ = responce_answer.not_auth_login;
@@ -995,6 +1003,7 @@ function say(chatId,text_,){
   const options = { caption: text_, parse_mode: "HTML" };
   bot.sendPhoto(chatId, photoUrl, options);
 }
+//module exports
 module.exports = {
   say, profile, addUser, getUser, setAuthUser, logOut, settings, menu, reminder, on_reminder, off_reminder, 
     getProd, lists, list_names, getLists, openList, openShareListbykeys_for_admins,openListbykeys,share_list, share_list_confirm,
